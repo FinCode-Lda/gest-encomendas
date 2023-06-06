@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY')
 DEBUG = bool(int(os.environ.get('DEBUG', 0)))
 
-ALLOWED_HOSTS = ['192.168.1.150']
+ALLOWED_HOSTS = ['*']
 ALLOWED_HOSTS.extend(
     filter(
         None,
