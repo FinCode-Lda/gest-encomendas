@@ -45,3 +45,7 @@ admin.site.register(models.TarifaPeso)
 admin.site.register(models.TarifaVolume)
 admin.site.register(models.Transportador)
 admin.site.register(models.Viatura)
+admin.site.register(models.CargaStock)
+admin.site.register(models.Transaction)
+
+admin.site.site_header = 'SISTEMA DE GESTÃO DE ENCOMENDAS'

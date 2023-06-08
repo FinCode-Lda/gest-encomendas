@@ -61,7 +61,7 @@ class TarifaPeso(models.Model):
         verbose_name_plural = 'Tarifas por Peso'
 
     def __str__(self) -> str:
-        return self.categoria_carga.descricao
+        return f'{self.categoria_carga.descricao} - Valor comercial {self.valor_comercial} MT'
 
 class TarifaVolume(models.Model):
     rota = models.ForeignKey(Rota, on_delete=models.CASCADE)
@@ -71,6 +71,9 @@ class TarifaVolume(models.Model):
 
     class Meta:
         verbose_name_plural = 'Tarifas por Volume'
+
+    def __str__(self) -> str:
+        return f'{self.categoria_carga.descricao} - Valor Comercial {self.valor_comercial} MT'
 
 class Servico(models.Model):
     name = models.CharField(max_length=100)
@@ -107,7 +110,6 @@ class Carga(models.Model):
     def __str__(self) -> str:
         return self.codigo
 
-
 class Notificacao(models.Model):
     carga = models.ForeignKey(Carga, on_delete=models.CASCADE)
     notification_type = models.CharField(max_length=50)
@@ -117,4 +119,40 @@ class Notificacao(models.Model):
         return self.carga.codigo
 
 
+class CargaStock(models.Model):
+    carga = models.OneToOneField(Carga, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField()
 
+    def __str__(self):
+        return f"{self.carga.codigo} - {self.quantity}"
+
+
+class Transaction(models.Model):
+    TRANSACTION_TYPES = (
+        ('IN', 'Stock-In'),
+        ('OUT', 'Stock-Out'),
+    )
+
+    carga = models.ForeignKey(Carga, on_delete=models.CASCADE)
+    type = models.CharField(max_length=4, choices=TRANSACTION_TYPES)
+    quantity = models.PositiveIntegerField()
+    date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.carga.codigo} - {self.type} - {self.quantity}"
+
+    def save(self, *args, **kwargs):
+        # update the stock when a transaction is saved
+        stock, created = CargaStock.objects.get_or_create(carga=self.carga)
+
+        if self.type == 'IN':
+            stock.quantity += self.quantity
+        elif self.type == 'OUT':
+            if self.quantity <= stock.quantity:
+                stock.quantity -= self.quantity
+            else:
+                raise ValueError("Stock is not sufficient")
+
+        stock.save()
+
+        super().save(*args, **kwargs)

@@ -28,6 +28,8 @@ urlpatterns = [
          name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(),
          name='token_refresh'),
+    path('api/v1/gest-encomendas/users/', include('users.urls')),
+    path('api/v1/gest-encomendas/', include('core.urls')),
    # path('api/v1/shipper/users/', include('users.urls')),
    # path('api/v1/shipper/', include('core.urls')),
 ]

@@ -67,8 +67,10 @@ class ServicoSerializer(serializers.ModelSerializer):
 
 
 class CargaSerializer(serializers.ModelSerializer):
-    tarifa_peso_preco = serializers.DecimalField(source='tarifa_peso.preco')
-    tarifa_volume_preco = serializers.DecimalField(source='tarifa_volume.preco')
+    tarifa_peso_preco = serializers.SerializerMethodField()
+    tarifa_volume_preco = serializers.SerializerMethodField()
+   # tarifa_peso_preco = serializers.DecimalField(source='tarifa_peso.preco', max_digits=10, decimal_places=2)
+   # tarifa_volume_preco = serializers.DecimalField(source='tarifa_volume.preco', max_digits=10, decimal_places=2)
     remetente_nome = serializers.StringRelatedField(source='remetente')
     receptor_nome = serializers.StringRelatedField(source='receptor')
     rota_descricao = serializers.StringRelatedField(source='rota')
@@ -84,7 +86,17 @@ class CargaSerializer(serializers.ModelSerializer):
         fields = ['codigo', 'descricao', 'valor_comercial', 'peso', 'volume',
                   'tarifa_peso', 'tarifa_peso_preco', 'tarifa_volume', 'tarifa_volume_preco',
                   'total', 'data_partida', 'data_chegada', 'status', 'remetente', 'remetente_nome',
-                  'receptor', 'rota', 'rota_descricao', 'transportador_principal', 'transportador_principal_nome',
+                  'receptor', 'receptor_nome', 'rota', 'rota_descricao', 'transportador_principal', 'transportador_principal_nome',
                   'viatura_principal','viatura_principal_matricula', 'transportador_secundario',
                   'transportador_secundario_nome', 'viatura_secundaria', 'viatura_secundaria_matricula',
                   'criado_por', 'criado_por_nome', 'modificado_por', 'modficado_por_nome','criado_em', 'modificado_em']
+    
+    def get_tarifa_peso_preco(self, obj):
+        if obj.tarifa_peso:
+            return obj.tarifa_peso.preco
+        return None
+
+    def get_tarifa_volume_preco(self, obj):
+        if obj.tarifa_volume:
+            return obj.tarifa_volume.preco
+        return None
