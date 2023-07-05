@@ -70,6 +70,7 @@ class TarifaVolume(models.Model):
     preco = models.DecimalField(max_digits=10, decimal_places=2)
 
     class Meta:
+        verbose_name = 'Tarifa por Volume'
         verbose_name_plural = 'Tarifas por Volume'
 
     def __str__(self) -> str:
